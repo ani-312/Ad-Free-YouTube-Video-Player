@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad-Free YouTube Video Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #AFDDE5;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #024950;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        button {
+            background-color: #024950;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+
+        iframe {
+            width: 80%;
+            height: 450px;
+            margin: 20px auto;
+            display: block;
+            border: none;
+        }
+
+        .history {
+            margin: 20px 0;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .list ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        .list li {
+            margin: 5px 0;
+        }
+
+        .list p {
+            color: #555;
+        }
+
+        footer {
+            background: #f1f1f1;
+            padding: 10px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>YouTube Video Player</h1>
+    </header>
+    <div class="container">
+        <input type="text" id="youtubeLink" placeholder="Paste YouTube link here">
+        <button id="playVideoBtn">Play Video</button>
+    </div>
+    <div id="videoContainer">
+        <iframe id="youtubePlayer" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div class="history">
+        <h2>Video History</h2>
+        <div class="list" id="historyList">
+            <p>No history yet. Play a video to start tracking.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made by Aniket</p>
+    </footer>
+
+    <script>
+        const historyList = document.getElementById('historyList');
+        let history = [];
+
+        document.getElementById('playVideoBtn').addEventListener('click', () => {
+            const link = document.getElementById('youtubeLink').value.trim();
+            const player = document.getElementById('youtubePlayer');
+
+            // Extract the video ID from the YouTube URL
+            const videoID = extractVideoID(link);
+
+            if (videoID) {
+                player.src = `https://www.youtube.com/embed/${videoID}?autoplay=1&rel=0`;
+                addToHistory(link); // Add the link to the history
+            } else {
+                alert('Please enter a valid YouTube link!');
+            }
+        });
+
+        // Function to extract video ID from YouTube URL
+        function extractVideoID(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        // Add video link to the history
+        function addToHistory(link) {
+            history.push(link);
+            updateHistoryList();
+        }
+
+        // Update the history section
+        function updateHistoryList() {
+            if (history.length > 0) {
+                historyList.innerHTML = '<ul>' + 
+                    history.map(url => `<li><a href="${url}" target="_blank">${url}</a></li>`).join('') + 
+                    '</ul>';
+            } else {
+                historyList.innerHTML = '<p>No history yet. Play a video to start tracking.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
