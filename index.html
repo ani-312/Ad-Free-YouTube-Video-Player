@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ad-Free YouTube Video Player</title>
+    <title>Ad-Free YouTube Video Player with Feedback</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,7 +100,7 @@
 </head>
 <body>
     <header>
-        <h1>YouTube Video Player</h1>
+        <h1>YouTube Video Player with Feedback</h1>
     </header>
     <div class="container">
         <input type="text" id="youtubeLink" placeholder="Paste YouTube link here">
@@ -129,7 +129,13 @@
         <p>Made by Aniket</p>
     </footer>
 
-    <script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("qPVlejrKIxCwfVOBV"); // Initialize EmailJS with your public key
+        })();
+
+        // Video history array
         const historyList = document.getElementById('historyList');
         let history = [];
 
@@ -173,14 +179,25 @@
         }
 
         // Handle feedback submission
-        document.getElementById('submitFeedback').addEventListener('click', () => {
+        document.getElementById('submitFeedback').addEventListener('click', function() {
             const feedbackText = document.getElementById('feedbackText').value.trim();
-            const feedbackMessage = document.getElementById('feedbackMessage');
 
             if (feedbackText) {
-                feedbackMessage.style.display = 'block';
-                feedbackMessage.textContent = 'Thank you for your feedback!';
-                document.getElementById('feedbackText').value = ''; // Clear the input
+                // Send the feedback via EmailJS
+                emailjs.send("service_skr2sen", "template_xg5a2b8", {
+                    message: feedbackText
+                })
+                .then(function(response) {
+                    console.log('Email sent successfully:', response);
+                    document.getElementById('feedbackMessage').style.display = 'block';
+                    document.getElementById('feedbackMessage').textContent = 'Thank you for your feedback!';
+                }, function(error) {
+                    console.log('Failed to send email:', error);
+                    alert('Failed to send feedback. Please try again.');
+                });
+
+                // Clear feedback text
+                document.getElementById('feedbackText').value = ''; 
             } else {
                 alert('Please write some feedback before submitting.');
             }
